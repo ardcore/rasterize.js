@@ -1,0 +1,239 @@
+<html>
+<head>
+	<title>rasterize.js</title>
+
+<style type="text/css">
+
+	body {
+		float: left;
+	}
+
+	canvas {
+		border: 1px solid #ccc;
+		float: right;
+		margin: 10px 20px 0 10px;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;	
+
+	}
+
+	#controls {
+		float: right;
+		width: 400px;
+		margin: 0px 0;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;	
+
+	}
+
+	h1 {
+		padding-top: 0;
+		margin-top: 0;
+		margin-bottom: 0px;
+	}
+
+	h2 {
+		padding-top: 20px;
+		border-top: 1px solid #ccc;
+	}
+
+	button {
+		border: 2px solid #ccc;
+	}
+
+	button.active {
+		border: 2px solid #333;
+	}
+
+	code {
+		display: inline-block;
+		background: #f0f0f0;
+		border: 1px solid #ccc;
+		padding: 2px;
+		margin: 5px 0px;
+	}
+
+</style>
+
+</head>
+<body>
+
+
+	<div id="controls">
+		<h1>rasterize.js</h1>
+		<p>simple 2d rasterization algorithms implemented in JavaScript</p>
+
+		<h2>playground</h2>
+		<button id="line">line</button>
+		<button id="circle">circle</button>
+
+		<h2>usage</h2>
+		<p>rasterized line from (<em>x0</em>, <em>y0</em>) to (<em>x1</em>, <em>y1</em>):
+			<code>var points = rasterize.line( x0, y0, x1, y1 );</code>
+		</p>
+
+		<p>rasterized circle with origin in point (<em>x0</em>, <em>y0</em>) and radius <em>r</em>:
+			<code>var points = rasterize.circle( x0, y0, r );</code>
+		</p>
+
+		<h2>code</h2>
+		<p><a href="https://github.com/ardcore/rasterize.js">https://github.com/ardcore/rasterize.js</a></p>
+
+		<h2>author</h2>
+		<p><a href="http://twitter.com/ard">Szymon Pilkowski</a></p>
+
+
+	</div>
+
+	<canvas id="test" width=640 height=640></canvas>
+
+<script type="text/javascript" src="rasterize.js"></script>
+<script>
+
+	var c = document.querySelector("#test");
+	var ctx = c.getContext('2d');
+
+	ctx.translate(0.5, 0.5);
+
+	var fieldWidth = null;
+	var fieldHeight = null;
+
+	function setGrid(fieldWidth, fieldHeight, xCount, yCount) {
+
+		ctx.clearRect(0, 0, 640, 640);
+		ctx.lineWidth = 0.1;
+		ctx.strokeStyle = "#000";
+
+		for ( var i = 1; i < xCount; i++ ) {
+
+			ctx.moveTo( i * fieldWidth, 0 );
+			ctx.lineTo( i * fieldWidth, yCount * fieldHeight );
+
+
+		}
+
+		for ( var j = 1; j < yCount; j++ ) {
+
+			ctx.moveTo( 0, j * fieldHeight );
+			ctx.lineTo( xCount * fieldHeight, j * fieldHeight );
+
+		}
+
+		ctx.stroke();
+
+	}
+
+	function fillField( x, y, w, h ) {
+		ctx.fillStyle = "#333";
+		ctx.fillRect( x * w, y * h, w, h );
+	}
+
+	function strokeField( x, y, w, h ) {
+		ctx.strokeRect( x * w, y * h, w, h );		
+	}
+
+	setGrid( 32, 32, 20, 20 )
+
+	var btns = document.querySelectorAll("button");
+
+	var previousSelected = null;
+
+	var action = null;
+
+	for( var i = 0; i < btns.length; i++ ) {
+
+		btns[i].addEventListener("click", function(e) {
+			e.target.classList.add("active");
+			action = e.target.innerHTML;
+			if (previousSelected && previousSelected !== e.target) previousSelected.classList.remove("active");
+			previousSelected = e.target;
+		})
+	}
+
+	var drawing = false;
+
+	var sX, sY;
+
+	c.addEventListener("mousedown", function(e) {
+
+		if (action) {
+
+			drawing = true;
+
+			sX = e.clientX - 10;
+			sY = e.clientY - 10;
+			
+		}
+
+
+	})
+
+	var p = [];
+
+	c.addEventListener("mousemove", function(e) {
+
+		if (!drawing) return;
+
+		setGrid(32, 32, 20, 20);
+
+		if (action == "line") {
+			p = rasterize.line(sX / 32 | 0, sY / 32 | 0, (e.clientX - 10) / 32 | 0, (e.clientY - 10) / 32 | 0);
+			drawPoints(p);
+		} else if (action == "circle") {
+
+			var x = sX - (e.clientX - 10);
+			var y = sY - (e.clientY - 10);
+			var r = Math.sqrt(x * x + y * y);
+
+			p = rasterize.circle(sX / 32 | 0, sY / 32 | 0, r / 32 | 0);
+			drawPoints(p);			
+		}
+
+
+
+	})
+
+	c.addEventListener("mouseup", function(e) {
+		drawing = false;
+	})
+
+	function drawPoints(points) {
+		console.log(action, points)
+		for (var i = 0; i < points.length; i++) {
+			fillField(points[i].x, points[i].y, 32, 32)
+		}
+	}
+
+	function drawFace() {
+		var circle = rasterize.circle(10, 10, 8);
+		var eye1 = rasterize.circle(7, 7, 1);
+		var eye2 = rasterize.circle(13, 7, 1);
+		var mouth = rasterize.line(8, 14, 13, 13);
+		var points = circle.concat(eye1).concat(eye2).concat(mouth);
+
+		for (var i = 0; i < points.length; i++) {
+			(function(i) {
+				setTimeout( function() {
+					fillField( points[i].x, points[i].y, 32, 32 );
+				}, i*16.666 )
+			})(i)
+		}
+	}
+
+
+
+
+	drawFace();
+
+</script>
+
+</body>
+</html>
