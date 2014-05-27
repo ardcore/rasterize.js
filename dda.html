@@ -1,0 +1,168 @@
+<html>
+
+<head>
+    <title>dl text demo</title>
+</head>
+
+<body bgcolor=#F0F0E5>
+
+    <label style='background-color:#FEFADF; color: #600010; font-size: 16pt'>JOYS LAB PRESENTS</label>
+    <br>DDA Algorithm Demo. (Use Full Screen mode)
+    <br>X
+    <sub>a</sub>
+    <script type="text/javascript">
+    var s = "";
+    s += "<select id='selbox1' style='background-color:#EAF5D1;  color: #27A023; font-size: 14pt'>";
+    for (i = 0; i < 150; i++) {
+        s += "<option ";
+        s += "value='";
+        s += i;
+        s += "'>";
+        s += i;
+        s += "</option>";
+    }
+    s += "</select>";
+
+    document.writeln(s);
+    </script>
+    Y<sub>a</sub>
+    <script type="text/javascript">
+    var s = "";
+    s += "<select id='selbox2' style='background-color:#EAF5D1;  color: #27A023; font-size: 14pt'>";
+    for (i = 0; i < 100; i++) {
+        s += "<option ";
+        s += "value='";
+        s += i;
+        s += "'>";
+        s += i;
+        s += "</option>";
+    }
+    s += "</select>";
+
+    document.writeln(s);
+    </script>
+
+    X<sub>b</sub>
+    <script type="text/javascript">
+    var s = "";
+    s += "<select id='selbox3'  style='background-color:#EAF5D1;  color: #27A023; font-size: 14pt'>";
+    for (i = 149; i >= 0; i--) {
+        s += "<option ";
+        s += "value='";
+        s += i;
+        s += "'>";
+        s += i;
+        s += "</option>";
+    }
+    s += "</select>";
+
+    document.writeln(s);
+    </script>
+
+    Y<sub>b</sub>
+    <script type="text/javascript">
+    var s = "";
+    s += "<select id='selbox4'  style='background-color:#EAF5D1;  color: #27A023; font-size: 14pt'>";
+    for (i = 99; i >= 0; i--) {
+        s += "<option ";
+        s += "value='";
+        s += i;
+        s += "'>";
+        s += i;
+        s += "</option>";
+    }
+    s += "</select>";
+
+    document.writeln(s);
+    </script>
+
+
+    <button type='button' id=but_draw value='Draw' onclick='but_draw_click()' style='background-color:#EAF5DA;  color: #27A023; font-size: 14pt'>
+        Draw
+    </button>
+
+
+    <button type='button' id=but_reload value='Refresh' onclick='window.location.reload(false)' style='background-color:#EAF5DA;  color: #27A023; font-size: 14pt'>
+        Refresh
+    </button>
+    <label id=lab1></label>,
+    <label id=lab2></label>
+    <script type='text/javascript'>
+    function but_draw_click() {
+
+        var xa, ya, xb, yb, x, y, dx, dy, steps, xinc, yinc;
+
+        xa = parseInt(document.getElementById('selbox1').options[document.getElementById('selbox1').selectedIndex].value);
+
+        //window.alert(xa);
+
+        ya = parseInt(document.getElementById('selbox2').options[document.getElementById('selbox2').selectedIndex].value);
+        xb = parseInt(document.getElementById('selbox3').options[document.getElementById('selbox3').selectedIndex].value);
+        yb = parseInt(document.getElementById('selbox4').options[document.getElementById('selbox4').selectedIndex].value);
+
+
+
+        dx = xb - xa;
+        dy = yb - ya;
+
+        if (dx > dy) {
+            steps = Math.abs(dx);
+        } else {
+            steps = Math.abs(dy);
+        }
+
+        xinc = dx / steps;
+        yinc = dy / steps;
+
+
+
+
+
+
+        x = xa;
+        y = ya;
+
+        document.getElementById('b' + Math.round(x) + '_' + Math.round(y)).style.backgroundColor = "#FA0F01";
+        for (i = 1; i < steps; i++) {
+            x = x + xinc;
+            y = y + yinc;
+            document.getElementById('b' + Math.round(x) + '_' + Math.round(y)).style.backgroundColor = "#0000FF";
+
+
+        }
+        x = xb;
+        y = yb;
+
+        document.getElementById('b' + Math.round(x) + '_' + Math.round(y)).style.backgroundColor = "#FA0F01";
+
+
+    }
+
+
+    function but_over(x, y) {
+        document.getElementById('lab1').innerHTML = x;
+        document.getElementById('lab2').innerHTML = y;
+
+        //document.getElementById('b'+x+'_'+y).style.backgroundColor="#FA0F01";
+    }
+    </script>
+    <script type='text/javascript'>
+    var s = "";
+    s += "<table>";
+    for (i = 99; i >= 0; i--) {
+        s += "<tr>";
+        for (j = 0; j < 150; j++) {
+            s += "<td id=b" + j + "_" + i + "  style='background-color:#FFCCFF;  height: 3px; width: 1px; color: #27A023; font-size:1pt' onmouseover='but_over(" + j + "," + i + ")'>";
+            s += "";
+            s += "</td>";
+        }
+        s += "</tr>";
+    }
+
+    s += "</table>";
+    document.writeln(s);
+    </script>
+
+</body>
+
+</html>
